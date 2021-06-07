@@ -1,6 +1,4 @@
 import React from "react";
-// import {Link} from "react-router-dom";
-import "./style.css";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
@@ -29,7 +27,7 @@ export default function MediaCard(props) {
         <CardMedia
           className={classes.media}
           image={props.originalImage}
-          title="Contemplative Reptile"
+          title={props.plantName}
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">
@@ -41,7 +39,12 @@ export default function MediaCard(props) {
         </CardContent>
       </CardActionArea>
       <CardActions>
-        <Button onClick={props.onClick}>Buy Plant</Button>
+        {/* <Button onClick={props.handleOnEdit} size="small" color="#00b786">
+          Add to Store For Sale
+        </Button> */}
+        <Button onClick={props.handleOnClick} size="small" color="#00b786">
+          Sold Plant
+        </Button>
       </CardActions>
     </Card>
   );

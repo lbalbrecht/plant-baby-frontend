@@ -1,24 +1,40 @@
 import React, { useEffect, useState } from "react";
 import API from "../../utils/Api";
 import NavBar from "../NavBar";
+import Box from "@material-ui/core/Box";
 import SignupForm from "../SignupForm/index";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    "& > *": {
-      margin: theme.spacing(1),
-    },
+    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://i.pinimg.com/originals/e1/e1/5c/e1e15c72f53c6065930b7cda96cff0a8.jpg')`,
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
+    position: "relative",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  hero: {
+    position: "relative",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    color: "#006a4e",
+    fontSize: "5rem",
   },
 }));
 
 export default function ComposedTextField(props) {
+  const history = useHistory();
   const classes = useStyles();
   const [formState, setFormState] = useState({
     email: "",
     password: "",
   });
+
   const [signupFormState, setSignupFormState] = useState({
     first_name: "",
     last_name: "",
@@ -31,18 +47,24 @@ export default function ComposedTextField(props) {
     user: {},
   });
 
+  const handleOnClick = () => {
+    history.push("/home");
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       API.getUser(token)
         .then((res) => {
           console.log(res.data);
+          console.log("token: ", token);
           setUserState({
             token: token,
             user: {
               email: res.data.email,
+              first_name: res.data.first_name,
+              last_name: res.data.last_name,
               id: res.data.id,
-              name: res.data.name,
             },
           });
         })
@@ -64,6 +86,7 @@ export default function ComposedTextField(props) {
       .then((res) => {
         console.log(res.data);
         localStorage.setItem("token", res.data.token);
+        console.log("token: ", res.data.token);
         setUserState({
           ...userState,
           token: res.data.token,
@@ -101,14 +124,14 @@ export default function ComposedTextField(props) {
           token: res.data.token,
           user: {
             email: res.data.email,
-            name: res.data.name,
+            first_name: res.data.first_name,
+            last_name: res.data.last_name,
             id: res.data.id,
           },
         });
-      })
+      }, handleOnClick())
       .catch((err) => {
-        console.log("error occured");
-        console.log(err);
+        console.log("error occured", err);
         localStorage.removeItem("token");
         setUserState({
           token: "",
@@ -133,22 +156,32 @@ export default function ComposedTextField(props) {
   return (
     <div className={classes.root}>
       <NavBar />
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <img src="./images/plant-baby-logo.png" alt=""/>
-        </Grid>
+
+      <Grid
+        container
+        spacing={3}
+        paddingBottom="10px"
+        direction="column"
+        alignItems="center"
+        justify="center"
+        style={{ minHeight: "100vh" }}
+      >
+        <Box className={classes.hero}>
+          <Box>Sign Up</Box>
+        </Box>
+
+        <SignupForm
+          className={classes.form}
+          user={userState.user}
+          handleFormSubmit={handleFormSubmit}
+          formState={formState}
+          setFormState={setFormState}
+          signupFormState={signupFormState}
+          setSignupFormState={setSignupFormState}
+          handleSignupFormSubmit={handleSignupFormSubmit}
+          handleLogout={handleLogout}
+        />
       </Grid>
-      <h2>Sign-up</h2>
-      <SignupForm
-        user={userState.user}
-        handleFormSubmit={handleFormSubmit}
-        formState={formState}
-        setFormState={setFormState}
-        signupFormState={signupFormState}
-        setSignupFormState={setSignupFormState}
-        handleSignupFormSubmit={handleSignupFormSubmit}
-        handleLogout={handleLogout}
-      />
     </div>
   );
 }

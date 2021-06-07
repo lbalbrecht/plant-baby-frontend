@@ -1,75 +1,94 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
 import NavBar from "../NavBar";
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import PlantCard from "../PlantCard";
-import CheckoutForm from '../CheckoutForm/index'
+import Box from "@material-ui/core/Box";
+import Container from "@material-ui/core/Container";
+import { makeStyles } from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+import ForSalePlantCard from "../ForSalePlantCard/index";
+import API from "../../utils/Api";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    '& > *': {
-      margin: theme.spacing(1),
+    backgroundColor: "#fdfcfa",
+  },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: "center",
+    color: theme.palette.text.secondary,
+  },
+  margin: {
+    backgroundColor: "#006a4e",
+    color: "#e1c0ad",
+  },
+  hero: {
+    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://www.technogym.com/wpress/wp-content/uploads/2019/04/indoor-plants-header.jpg')`,
+    height: "500px",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
+    position: "relative",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    color: "#fff",
+    padding: "10px",
+    fontSize: "4rem",
+    [theme.breakpoints.down("sm")]: {
+      height: 300,
+      fontSize: "3em",
     },
+  },
+  shopContainer: {
+    paddingTop: theme.spacing(3),
+    paddingBottom: theme.spacing(3),
   },
 }));
 
 export default function ComposedTextField() {
-  const [name, setName] = React.useState('Composed TextField');
+  const [name, setName] = React.useState("Composed TextField");
   const classes = useStyles();
 
-  const handleChange = (event) => {
-    setName(event.target.value);
+  const [plantState, setPlantState] = useState([]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    console.log("token: ", token);
+    API.getAllPlants(token).then((res) => {
+      // console.log(res.data)
+      const plants = res.data;
+      setPlantState(plants);
+      console.log(plantState);
+    });
+  }, []);
+
+  const buyPlant = () => {
+    const token = localStorage.getItem("token");
+    console.log("token: ", token);
+    API.getUser(token).then((res) => {
+      console.log(res.data.id);
+    });
   };
 
-
   return (
-    <div>
-      <Grid container spacing={3}>
-        <NavBar />
-        <Grid item xs={12}>
-          <img src={"https://static.wixstatic.com/media/be01c3_617ff8ef453c4395a76ac6d87b2af9a1~mv2.jpg/v1/fill/w_1000,h_667,al_c,q_90,usm_0.66_1.00_0.01/be01c3_617ff8ef453c4395a76ac6d87b2af9a1~mv2.jpg"} alt="" />
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <Button variant="outlined" size="large" color="primary" className={classes.margin}>
-            Pet Friendly
-      </Button>
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <Button variant="outlined" size="large" color="primary" className={classes.margin}>
-            Low Maintenance
-      </Button>
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <Button variant="outlined" size="large" color="primary" className={classes.margin}>
-            Exotic
-      </Button>
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <Button variant="outlined" size="large" color="primary" className={classes.margin}>
-            Restricted
-      </Button>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <PlantCard></PlantCard>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <PlantCard></PlantCard>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <PlantCard></PlantCard>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <PlantCard></PlantCard>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <PlantCard></PlantCard>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <PlantCard></PlantCard>
-        </Grid>
-      </Grid>
-      <CheckoutForm />
+    <div className={classes.root}>
+      <NavBar />
+      <Box className={classes.hero}>
+        <Box>Shop</Box>
+      </Box>
+      <Container maxWidth="lg" className={classes.shopContainer}>
+        <Box display="flex" flexWrap="wrap">
+          {plantState.map((plant, index) => (
+            <ForSalePlantCard
+              plantName={plant.type}
+              wikiDescription={plant.description}
+              originalImage={plant.image_file}
+              id={plant.id}
+              handleOnClick={buyPlant}
+              key={index}
+            />
+          ))}
+        </Box>
+      </Container>
     </div>
   );
 }
