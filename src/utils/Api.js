@@ -1,6 +1,6 @@
 const axios = require("axios");
 //deployed
-const URL_PREFIX = "https://plantbaby-back.herokuapp.com/"
+const URL_PREFIX = "https://plantbaby-back.herokuapp.com"
 
 // LOCAL
 // const URL_PREFIX = "http://localhost:3001";
